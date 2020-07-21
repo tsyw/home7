@@ -12,7 +12,7 @@ Using GAN to generate fake nodes for low gap density area.
 
 #### GANs
 
-$$\min\limits_{G}\max\limits_{D}V(G,D)=E_{x~p_d(x)}\log D(x)+E_{z~p_z(z)}\log (1-D(G(z)))$$
+$$\min\limits_{G}\max\limits_{D}V(G,D)=E_{x\sim p_d(x)}\log D(x)+E_{z\sim p_z(z)}\log (1-D(G(z)))$$
 
 This formula means that we want to minimize the Generated graphs(fake) and maximize the real graphs for D function. At the same time, we should maximize the second term for G function to fool the D function.
 
