@@ -5,6 +5,7 @@
 ## Link
 
 [Semi-supervised Learning on Graphs with Generative Adversarial Nets](https://arxiv.org/abs/1809.00130v1)
+[https://github.com/THUDM/GraphSGAN]()
 
 ### Motivation
 
@@ -110,3 +111,33 @@ f = np.append(f, c['1'])
 #### Training log
 
 1. walk2vec(G, 10, 400): acc = 67%
+这个结果和文章中预期的结果83%相去甚远，我首先认为是由于对网络结构信息的过度采样导致的，于是我对自己实现的deepwalk进行了参数调整。
+
+walk2vec(G, 10, 100): acc = 68.5%
+
+walk2vec(G, 10, 10): acc = 71.2%
+
+walk2vec(G, 10, 5): acc = 64.5%
+
+walk2vec(G, 10, 7): acc = 65%
+
+walk2vec(G, 10, 15): acc = 65.4%
+
+2. 好像没用，依然猜测和网络表示不足相关
+
+word2vec(size = ):
+
+size = 1000: acc = 70%
+
+size = 1500: acc = 70%
+
+size = 2000: acc = 73%
+
+size = 2500: acc = 72%
+
+size = 3000: acc = 71%
+
+size = 5000: acc = 67.5%
+
+最好的结果依然不能和文中的83%相比。
+观察到生成器的Loss很难降低，而分类器的Loss迅速降低，转而去调整算法中的超参数。

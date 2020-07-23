@@ -1,3 +1,4 @@
+#modified from https://github.com/THUDM/GraphSGAN
 # -*- coding:utf-8 -*-
 from __future__ import print_function
 import torch
@@ -82,7 +83,7 @@ class GraphSGAN(object):
         mom_gen = torch.mean(mom_gen, dim=0)
         mom_unlabel = torch.mean(mom_unlabel, dim=0)
         loss_fm = torch.mean(torch.abs(mom_gen - mom_unlabel))
-        loss = loss_fm + loss_pt
+        loss = loss_fm + 0.3 * loss_pt
         self.Goptim.zero_grad()
         self.Doptim.zero_grad()
         loss.backward()
@@ -188,7 +189,7 @@ if __name__ == '__main__':
                         help='how many batches to wait before logging training status')
     parser.add_argument('--eval-interval', type=int, default=1, metavar='N',
                         help='how many batches to wait before evaling training status')
-    parser.add_argument('--unlabel-weight', type=float, default=0.5, metavar='N',
+    parser.add_argument('--unlabel-weight', type=float, default=2, metavar='N',
                         help='scale factor between labeled and unlabeled data')
     parser.add_argument('--logdir', type=str, default='./logfile', metavar='LOG_PATH',
                         help='logfile path, tensorboard format')

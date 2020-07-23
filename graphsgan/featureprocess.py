@@ -26,7 +26,7 @@ def _simulate_walks(G, nodes, num_walks, walk_length):
 
 def walk2vec(G, num_walks, walk_length):
     walks = _simulate_walks(G, list(G.nodes()), num_walks, walk_length)
-    return Word2Vec(walks,sg=1,hs=1)
+    return Word2Vec(walks,sg=1,hs=1,window=10,workers=8,size=2000)
 
 
 
@@ -57,7 +57,7 @@ class FeatureGraphDataset(object):
         self.m = np.max(label) + 1  # num of classes
         self.k = features.shape[1]  # num of features
         self.adj = adj
-        ratio = 0.5
+        ratio = 0.9
         for k, v in adj.items():
             s = len(v)
             adj_features = reduce(lambda x, y: x + y, [self.features[y] for y in v])

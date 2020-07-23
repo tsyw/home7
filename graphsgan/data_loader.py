@@ -74,7 +74,7 @@ if __name__ == '__main__':
     Ln = list(G.neighbors(1))
     f = neighbour_fushion(1, Ln, features, 0.9)
     a = list(G.nodes())
-    c = walk2vec(G, 10, 100)
+    c = walk2vec(G, 10, 10)
 
     f = open('emb_file', "w")
 
