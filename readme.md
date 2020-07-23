@@ -106,3 +106,7 @@ a = list(G.nodes())
 c = walk2vec(G, 10, 400)
 f = np.append(f, c['1'])
 ```
+
+#### Training log
+
+1. walk2vec(G, 10, 400): acc = 67%

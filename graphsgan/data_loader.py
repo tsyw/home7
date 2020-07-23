@@ -1,11 +1,11 @@
 import sys
 
 import pickle as pkl
-
+import torch
 import networkx as nx
 import numpy as np
 import scipy.sparse as sp
-from graphsgan.featureprocess import neighbour_fushion, walk2vec
+from graphsgan.featureprocess import neighbour_fushion, walk2vec, FeatureGraphDataset
 
 def load_data(dataset_str = 'cora'):
     """Load data."""
@@ -36,7 +36,9 @@ def load_data(dataset_str = 'cora'):
 
     labels = np.vstack((ally, ty))
     labels[test_idx_reorder, :] = labels[test_idx_range, :]     # onehot
-    
+    labels = torch.from_numpy(labels)
+    labels = torch.topk(labels, 1)[1].squeeze(1)
+    labels = np.array(labels)
     idx_train = range(len(y))       # training data index
     idx_val = range(len(y), len(y)+500)     # validation data index
     idx_test = test_idx_range.tolist()      # test data index 
@@ -67,9 +69,19 @@ if __name__ == '__main__':
     print('label shape', labels.shape)      #label matrix, Shape(2708, 7)
     print('train/validation/test split: %s/%s/%s'%(len(idx_train), len(idx_val), len(idx_test)) )
 
+
     G = nx.Graph(adj)
     Ln = list(G.neighbors(1))
     f = neighbour_fushion(1, Ln, features, 0.9)
     a = list(G.nodes())
-    c = walk2vec(G, 10, 400)
-    f = np.append(f, c['1'])
+    c = walk2vec(G, 10, 100)
+
+    f = open('emb_file', "w")
+
+    f.write(str(len(features)) + " " + str(c.layer1_size)+ '\n')
+    for i in range(2708):
+        f.write(str(i) + ' ')
+        for num in c[str(i)]:
+            f.write(str(num) + ' ')
+        f.write('\n')
+    f.close()
