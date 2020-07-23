@@ -55,3 +55,54 @@ Loss function:
    2. Generated samples should not overfit at the only center point: the same as 4 in D function.
 
 3. hyper-parameter: to control the relative strength of different terms.
+
+### Code
+#### data preprocess
+To random walk to generate word2vec model, I choose the number of walk rounds as 10, because the average edge for each node is 2. Meanwhile, I choose the path length as 400 due because the average nodes' number for each type is 400.
+```python
+import random
+from gensim.models import Word2Vec
+def walker(G, walk_length, start_node):
+    walk = [str(start_node)]
+
+    while len(walk) < walk_length:
+        cur = int(walk[-1])
+        cur_nbrs = list(G.neighbors(cur))
+        if len(cur_nbrs) > 0:
+            walk.append(str(random.choice(cur_nbrs)))
+        else:
+            break
+    return walk
+# From https://github.com/shenweichen/GraphEmbedding/blob/master/ge/walker.py
+def _simulate_walks(G, nodes, num_walks, walk_length):
+    walks = []
+    for _ in range(num_walks):
+        random.shuffle(nodes)
+        for v in nodes:
+            walks.append(walker(G, walk_length=walk_length, start_node=v))
+    return walks
+
+def walk2vec(G, num_walks, walk_length):
+    walks = _simulate_walks(G, list(G.nodes()), num_walks, walk_length)
+    return Word2Vec(walks,sg=1,hs=1)
+
+# The DataSet has 2708 nodes and 5429 edges with 7 classes
+```
+Neighbour Fusion
+```python
+import numpy as np
+def neighbour_fushion(node, nblist, fmatrix, alpha):
+    sum = np.zeros(len(fmatrix[0]))
+    for idx in nblist:
+        sum = sum + fmatrix[idx]
+    return sum * (1 - alpha) / len(nblist) + alpha * fmatrix[node]
+```
+For a test:
+```python
+G = nx.Graph(adj)
+Ln = list(G.neighbors(1))
+f = neighbour_fushion(1, Ln, features, 0.9)
+a = list(G.nodes())
+c = walk2vec(G, 10, 400)
+f = np.append(f, c['1'])
+```

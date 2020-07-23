@@ -5,21 +5,20 @@ import pickle as pkl
 import networkx as nx
 import numpy as np
 import scipy.sparse as sp
-
-
+from graphsgan.featureprocess import neighbour_fushion, walk2vec
 
 def load_data(dataset_str = 'cora'):
     """Load data."""
     names = ['x', 'y', 'tx', 'ty', 'allx', 'ally', 'graph']
     objects = []
     for i in range(len(names)):
-        with open("data/ind.{}.{}".format(dataset_str, names[i]), 'rb') as f:
+        with open("./data/ind_{}_{}".format(dataset_str, names[i]), 'rb') as f:
             if sys.version_info > (3, 0):
                 objects.append(pkl.load(f, encoding='latin1'))
             else:
                 objects.append(pkl.load(f))
     x, y, tx, ty, allx, ally, graph = tuple(objects)
-    test_idx_reorder = parse_index_file("data/ind.{}.test.index".format(dataset_str))
+    test_idx_reorder = parse_index_file("./data/ind_{}_test_index".format(dataset_str))
     test_idx_range = np.sort(test_idx_reorder)
 
     features = sp.vstack((allx, tx)).tolil()
@@ -61,10 +60,16 @@ def normalize(mx):
     mx = r_mat_inv.dot(mx)
     return mx
 
-
 if __name__ == '__main__':
     adj, features, labels, idx_train, idx_val, idx_test = load_data('cora')
     print('adj shape', adj.shape)        # adjacency matrix with Shape(2708, 2708)
     print('feature shape', features.shape)      # feature matrix, Shape(2708, 1433)
     print('label shape', labels.shape)      #label matrix, Shape(2708, 7)
     print('train/validation/test split: %s/%s/%s'%(len(idx_train), len(idx_val), len(idx_test)) )
+
+    G = nx.Graph(adj)
+    Ln = list(G.neighbors(1))
+    f = neighbour_fushion(1, Ln, features, 0.9)
+    a = list(G.nodes())
+    c = walk2vec(G, 10, 400)
+    f = np.append(f, c['1'])

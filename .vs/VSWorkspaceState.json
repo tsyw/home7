@@ -1,7 +1,8 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\graphsgan"
   ],
-  "SelectedNode": "\\readme.md",
+  "SelectedNode": "\\graphsgan\\data_loader.py",
   "PreviewInSolutionExplorer": false
 }
